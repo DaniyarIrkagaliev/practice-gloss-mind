@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <style>
+        #header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #terms ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #terms li {
+            display: grid;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .actions{
+            display: grid;
+            grid-template-rows: 1fr;
+        }
+
+        #terms form {
+            float: right;
+            margin-top: 5px;
+        }
+
+        #terms button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .newDescription {
+            resize: none;
+            width: 100%;
+            height: 80px;
+            word-wrap: break-word;
+        }
+
+        #add-new label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #add-new input[type="text"], #add-new .newDescription {
+            width: 300px;
+            padding: 5px;
+            font-size: 16px;
+            word-wrap: break-word;
+        }
+
+        #add-new button {
+            margin-top: 15px;
+            padding: 7px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<section id="header">
+    <h1><a href="/">Глоссарий</a></h1>
+    <h2><a href="/mindmap">MindMap</a></h2>
+</section>
+
+<section id="search">
+    <h2>Поиск термина</h2>
+    <form method="get" action="/search/" >
+        <label for="keyword">Ключевое слово:</label>
+        <input type="text" id="keyword" name="keyword" required>
+        <button type="submit">Искать</button>
+
+    </form>
+</section>
+
+<section id="add-new">
+    <h2>Добавить новый термин</h2>
+    {% if message %}
+    <p style="color: red;">{{ message }}</p>
+    {% endif %}
+    <form action="/add-term/" method="post">
+        <label for="term">Термин:</label>
+        <input type="text" id="term" name="term" required>
+
+        <br><br>
+
+        <label for="definition">Определение:</label>
+        <textarea id="definition" name="definition" rows="4" cols="50" required></textarea>
+
+        <br><br>
+
+        <button type="submit">Отправить</button>
+    </form>
+</section>
+
+<section id="terms">
+    <ul>
+        {% for term in terms %}
+        <li>
+            <div class="term-info">
+                {{ term[0] }} <strong>{{ term[1] }}:</strong> {{ term[2] }}
+            </div>
+            <div class="actions">
+                <form method="post" action="/delete-term/{{ term[0] }}">
+                    <input type="hidden" name="method" value="DELETE">
+                    <button type="submit">Удалить</button>
+                </form>
+                <form method="post" action="/update-term/">
+                    <!-- Скрытый input для передачи id -->
+                    <input type="hidden" name="term_id" value="{{ term[0] }}"/>
+                    <input type="text" name="new_term" placeholder="Новый термин" value="{{term[1]}}"/>
+                    <textarea class="newDescription" type="text" name="new_definition" placeholder="Новое определение">{{term[2]}}</textarea>
+                    <button type="submit">Обновить</button>
+                </form>
+
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MindMap</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #mynetwork {
+            max-width: 100%;
+            height: 500px;
+            margin: auto;
+        }
+         #header{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<section id="header">
+    <h1>
+        <a href="/">Глоссарий</a>
+    </h1>
+    <h2>
+        <a href="/mindmap">MindMap</a>
+    </h2>
+</section>
+<div id="mynetwork"></div>
+<script>
+    let gexfData = {{ gexf_data | tojson }};
+
+
+    function replaceKeys(gexfData) {
+    gexfData.edges.forEach(function(edge) {
+        edge.from = edge.source;
+        delete edge.source;
+        edge.to = edge.target;
+        delete edge.target;
+    });
+    return gexfData;
+    }
+
+    let updatedGexfData = replaceKeys(gexfData);
+    let nodes = updatedGexfData.nodes
+    let edges = updatedGexfData.edges
+
+
+    var container = document.getElementById('mynetwork');
+
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+    autoResize: true,
+    physics: {
+        enabled: false,
+        },
+    };
+
+    var network = new vis.Network(container, data, options);
+
+</script>
+</body>
+</html>
