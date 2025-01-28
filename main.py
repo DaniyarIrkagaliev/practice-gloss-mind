@@ -95,7 +95,6 @@ async def add_term(request: Request, term: str = Form(...), definition: str = Fo
 
     _cursor.execute(f'SELECT COUNT(*) FROM terms')
     row_count = _cursor.fetchone()[0]
-    # print(row_count)
     if row_count > 1:
         related_terms = find_related_terms(term, definition)
 
@@ -122,13 +121,9 @@ async def add_term(request: Request, term: str = Form(...), definition: str = Fo
                 ''', (term_id, related_term_id))
 
         _db_conn.commit()
-        # print("Больше одного")
 
     generate_graph()
     _cursor.execute("SELECT * FROM relations")
-    relations = _cursor.fetchall()
-    # print("relations")
-    # print(relations)
     _cursor.execute("SELECT id, term, definition FROM terms")
     terms = _cursor.fetchall()
 
@@ -150,17 +145,11 @@ def find_related_terms(term, definition):
     tfidf_matrix = vectorizer.fit_transform(texts)
 
     cosine_similarities = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
-    # print('cosine_similarities')
-    # print(cosine_similarities[0])
     related_terms = []
     for index, score in enumerate(cosine_similarities[0]):
-        # print("index, score, existing_terms")
-        # print(index, score, existing_terms[index])
         if score > 0.049:  # Устанавливаем порог для фильтрации слабых связей
-            # print(existing_terms[index][0])
             related_terms.append(existing_terms[index][0])  # Добавляем связанный термин
-    # print("related_terms")
-    # print(related_terms)
+
     return related_terms
 
 
@@ -201,8 +190,6 @@ async def delete_term(request: Request, term_id: str, method: str = Form(None)):
 
 @app.get("/search/")
 async def search_term_by_definition(request: Request, keyword: str = Query(...)):
-    # logger.debug(f"/search/")
-    # logger.debug(f"Получен запрос на получение термина: {keyword}")
     # Поиск терминов, содержащие указанный keyword
     query = f"""
             SELECT * FROM terms
@@ -225,10 +212,7 @@ async def search_term_by_definition(request: Request, keyword: str = Query(...))
 async def index(request: Request):
     _cursor.execute("SELECT id, term, definition FROM terms")
     terms = _cursor.fetchall()
-    # print(terms)
     _cursor.execute("SELECT * FROM relations")
-    relations = _cursor.fetchall()
-    # print(relations)
     return templates.TemplateResponse("index.html", {"request": request, "terms": terms})
 
 
