@@ -2,6 +2,6 @@ fastapi
 uvicorn
 jinja2
 networkx
-sklearn
+scikit-learn
 pydantic
-sqlite3
+python-multipart
